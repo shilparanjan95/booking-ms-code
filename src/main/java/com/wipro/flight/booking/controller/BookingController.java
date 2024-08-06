@@ -1,7 +1,6 @@
 package com.wipro.flight.booking.controller;
 
 import com.wipro.flight.booking.dto.BookingInfo;
-import com.wipro.flight.booking.service.BookingService;
 import com.wipro.flight.booking.service.impl.BookingServiceImpl;
 import entity.FlightDetails;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -38,6 +37,8 @@ public class BookingController {
                                                                @Parameter(name = "date",description ="Travel Date") @RequestParam("date") String date)
     {
         List<FlightDetails> flightDetails =  bookingService.getAllFlights(source,destination,date);
+        if(flightDetails == null)
+         return   ResponseEntity.notFound().build();
         return ResponseEntity.ok(flightDetails);
     }
 
@@ -53,7 +54,7 @@ public class BookingController {
 
     }
 
-    public List<FlightDetails>  flightDataSearch(Throwable throwable)
+    public ResponseEntity<?> flightDataSearch(Throwable throwable)
     {
         FlightDetails flightDetails = FlightDetails.builder()
                 .source("Delhi -default")
@@ -66,7 +67,7 @@ public class BookingController {
                 .fromTime("4:00")
                 .toTime("6:00")
                 .build();
-        return List.of(flightDetails);
+        return ResponseEntity.ok(List.of(flightDetails));
     }
 
 

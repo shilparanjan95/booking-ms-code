@@ -1,5 +1,6 @@
 package com.wipro.flight.booking.service.impl;
 
+import com.wipro.flight.booking.config.UrlConfig;
 import com.wipro.flight.booking.dto.BookingInfo;
 import com.wipro.flight.booking.producer.BookingProducer;
 import com.wipro.flight.booking.repo.BookingInfoRepo;
@@ -11,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -29,16 +31,24 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     BookingInfoRepo bookingInfoRepo;
 
+    @Autowired
+    UrlConfig urlConfig;
+
     public List<FlightDetails> getAllFlights(String source, String destination, String date) {
+        ResponseEntity<List<FlightDetails>> responseEntity;
+        try {
+            responseEntity = restTemplate.exchange(
+                    urlConfig.getFlightSearchUrl(),
+                    HttpMethod.GET, null,
+                    new ParameterizedTypeReference<List<FlightDetails>>() {
+                    }, source, destination, date);
+        }
+        catch(HttpClientErrorException clientErrorException) {
+            return null;
+        }
+         return responseEntity.getBody();
 
-        ResponseEntity<List<FlightDetails>> responseEntity = restTemplate.exchange(
-                "http://api-gateway/flight/search?source={source}&destination={destination}&date={date}",
-                HttpMethod.GET,null,
-                new ParameterizedTypeReference<List<FlightDetails>>() {},source,destination,date);
-        if(responseEntity.getStatusCode().is2xxSuccessful())
-        return responseEntity.getBody();
 
-        return null;
 
     }
 
@@ -80,6 +90,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public ResponseEntity<FlightDetails> getAllFlightData(int flightId) {
-        return restTemplate.getForEntity("http://api-gateway/flight/"+flightId, FlightDetails.class);
+        return restTemplate.getForEntity(urlConfig.getFlightDataUrl()+flightId, FlightDetails.class);
     }
 }

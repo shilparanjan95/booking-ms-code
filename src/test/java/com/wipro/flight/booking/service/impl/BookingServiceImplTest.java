@@ -18,20 +18,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class BookingServiceImplTest {
-    @InjectMocks
-    BookingServiceImpl bookingService;
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    @Mock
-    BookingProducer bookingProducer;
-
-    @Mock
-    BookingInfoRepo bookingInfoRepo;
-
-    @Autowired
-    UrlConfig urlConfig;
 
     @Test
     public void getAllFlightsTest(){

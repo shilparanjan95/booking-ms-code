@@ -1,3 +1,7 @@
 flight:
   search:
   detail:
+logging:
+  level:
+    org:
+      springframework: DEBUG
